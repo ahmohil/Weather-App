@@ -4,7 +4,6 @@ import { useState } from "react";
 import { IoOpenOutline } from "react-icons/io5";
 
 const api = {
-  key: "226482ed04b9d91b0e4c5242a237393e",
   base: "https://api.openweathermap.org/data/2.5/",
 };
 
@@ -24,7 +23,7 @@ function Sidebar({ fetchData}) {
 
   const handleSubmit = () => {
     console.log(city);
-    fetch(`${api.base}weather?q=${city}&units=metric&APPID=${api.key}`)
+    fetch(`${api.base}weather?q=${city}&units=metric&APPID=${import.meta.env.VITE_API_KEY}`)
       .then((res) => res.json())
       .then((result) => {
         setWeather(result);
@@ -41,7 +40,7 @@ function Sidebar({ fetchData}) {
     */
 
     fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${api.key}`
+      `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${import.meta.env.VITE_API_KEY}`
     )
       .then((res) => res.json())
       .then((result) => {
@@ -50,7 +49,7 @@ function Sidebar({ fetchData}) {
         var lon = result[0].lon;
 
         fetch(
-          `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${api.key}`
+          `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_API_KEY}`
         )
           .then((res) => res.json())
           .then((result) => {
