@@ -17,15 +17,7 @@
   -webkit-text-size-adjust: 100%;
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-  z-index: -1; /* Place the overlay behind other content */
-}
+
 
 /* Apply blur effect to the background image */
 .blur-image {

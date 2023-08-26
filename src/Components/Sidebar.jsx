@@ -2,6 +2,9 @@ import { CiSearch } from "react-icons/ci";
 import { WiThermometer, WiCloudy } from "react-icons/wi";
 import { IoOpenOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
+import {airQuality, fetchData} from '../api.jsx';
+import axios from "axios";
+
 const airQualityStages = {
   1: "Air quality is considered good. Little to no risk to health. Suitable for outdoor activities.",
   2: "Air quality is acceptable. Moderate health concern for sensitive individuals. Unlikely to affect the general public.",
@@ -10,52 +13,60 @@ const airQualityStages = {
   5: "Serious health effects for everyone. Outdoor activities should be avoided. Sensitive groups should stay indoors.",
 };
 
-const api = {
-  base: 'https://api.openweathermap.org/data/2.5/',
-};
 
-
-function Sidebar({ fetchData }) {
+function Sidebar({passToParent}) {
   const [city, setCity] = useState("");
-  const [cityFromInput,setCityFromInput] = useState(""); 
   const [weather, setWeather] = useState("");
   const [air_pollution, setAirPollution] = useState("");
+  const [isError , setIsError] = useState(false);
+  const [error, setError] = useState(null);
+
+  const forecast = passToParent;
+
+  const handleSubmit = async () => {
+    setWeather(await fetchData(city))
+    setAirPollution(await airQuality(city));
+    forecast(await fetchData(city));
+  };
+
+ 
+
+  const fetchUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            console.log("INside try");
+            const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            console.log(response)
+            setCity(response.data.address.city);
+            console.log(response.data.address.city)
+          } catch (error) {
+            console.log("inside catch")
+            setError('Error fetching city name.');
+          }
+        },
+        (error) => {
+          setError(error.message);
+        }
+      );
+    } else {
+      setError('Geolocation is not supported by your browser.');
+    }
+
+    console.log(error);
+  };
 
   useEffect(() => {
+    fetchUserLocation();
+  }, []);
+  useEffect(() =>{
     if (city) {
       // Fetch weather data
-      fetch(`${api.base}weather?q=${city}&units=metric&APPID=${import.meta.env.VITE_API_KEY}`)
-        .then((res) => res.json())
-        .then((result) => {
-          setWeather(result);
-        })
-        .catch((error) => {
-          console.error("Fetch error:", error);
-        });
-
-      // Fetch geo data and air pollution data
-      fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${import.meta.env.VITE_API_KEY}`)
-        .then((res) => res.json())
-        .then((result) => {
-          const lat = result[0].lat;
-          const lon = result[0].lon;
-
-          fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_API_KEY}`)
-            .then((res) => res.json())
-            .then((result) => {
-              setAirPollution(result);
-            })
-            .catch((error) => {
-              console.error("Fetch error:", error);
-            });
-        });
+      handleSubmit();
     }
-  }, [city]);
-
-  const handleSubmit = () => {
-    // Set the city state to trigger the useEffect
-    setCity(cityFromInput);
-  };
+  },[]);  // This will check on first render if the city is not null so get its weather
 
   return (
     <div className="flex flex-col md:h-full">
@@ -70,7 +81,7 @@ function Sidebar({ fetchData }) {
             type="search"
             placeholder="Enter City or Town"
             onChange={(e) => {
-              setCityFromInput(e.target.value);
+              setCity(e.target.value);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -88,36 +99,18 @@ function Sidebar({ fetchData }) {
 
         {
           /* Show weather */
-          typeof weather.main !== "undefined" &&
-          typeof air_pollution.list !== "undefined" ? (
+          typeof weather.main !== "undefined"  ? (
             <div>
               <h2 className="text-7xl md:text-6xl pt-14 md:font-thin font-medium">
                 {Math.floor(weather.main.temp) + " °"}
               </h2>
-              <h2 className="text-right md:text-xs text-lg font-semibold">
+              <h2 className="text-right md:text-xs text-sm font-semibold">
                 Wind: {weather.wind.speed + " mph"}
               </h2>
               <h2 className="flex text-center items-center font-semibold text-lg">
                 <WiCloudy className=" mr-1" />
                 {weather.clouds.all}%
               </h2>
-              {/* 
-              <h2>Max: {weather.main.temp_max + " °C"}</h2>
-              <h2>Min: {weather.main.temp_min + " °C"}</h2>
-
-              <h2>Direction: {weather.wind.deg + " °"}</h2>
-
-              <div className="flex flex-row items-center">
-                <h1>Air Quality: {air_pollution.list[0].main.aqi}</h1>
-                <a
-                  href="https://openweathermap.org/api/air-pollution"
-                  target="_blank"
-                  className="ml-2"
-                >
-                  <IoOpenOutline />
-                </a>
-              </div>
-            */}
             </div>
           ) : (
             ""
@@ -129,15 +122,16 @@ function Sidebar({ fetchData }) {
       typeof air_pollution.list !== "undefined" ? (
         <div className="md:mt-auto mt-8">
           <h2 className="font-bold md:font-semibold md:py-2 text-lg tracking-wider">
-            {weather.name}
+            {weather.name}, {weather.sys.country}
           </h2>
           <p>{airQualityStages[air_pollution.list[0].main.aqi]}</p>
         </div>
       ) : (
         ""
       )}
+
+      
     </div>
   );
 }
-
 export default Sidebar;
