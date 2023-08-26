@@ -1,6 +1,5 @@
 import { CiSearch } from "react-icons/ci";
 import { WiThermometer, WiCloudy } from "react-icons/wi";
-import { IoOpenOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import {airQuality, fetchData} from '../api.jsx';
 import axios from "axios";
@@ -18,33 +17,53 @@ function Sidebar({passToParent}) {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState("");
   const [air_pollution, setAirPollution] = useState("");
-  const [isError , setIsError] = useState(false);
+  const [notFound , setNotFound] = useState(false);
   const [error, setError] = useState(null);
 
   const forecast = passToParent;
 
   const handleSubmit = async () => {
-    setWeather(await fetchData(city))
-    setAirPollution(await airQuality(city));
-    forecast(await fetchData(city));
+    try {
+      const weatherResponse = await fetchData(city);
+      setWeather(weatherResponse);
+      
+      console.log(weatherResponse); // This will log the weather response data
+      
+      if (weatherResponse.cod === "404") {
+        setNotFound(true);
+        setAirPollution("");
+        forecast(""); // This line seems incomplete, make sure you're calling the right function here
+      } else {
+        setNotFound(false);
+
+        const airQualityResponse = await airQuality(city);
+        setAirPollution(airQualityResponse);
+        
+        const forecastResponse = await fetchData(city);
+        forecast(forecastResponse);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
-
- 
-
+  
+  
   const fetchUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
+          console.log(position.coords)
           try {
             console.log("INside try");
-            const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-            console.log(response)
-            setCity(response.data.address.city);
-            console.log(response.data.address.city)
+            const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_API_KEY}&units=metric`);
+            console.log(response.data);
+            setWeather(response.data);
+            setAirPollution(await airQuality(response.data.name));
+            forecast(response.data);
           } catch (error) {
             console.log("inside catch")
-            setError('Error fetching city name.');
+            setError('Error fetching Data');
           }
         },
         (error) => {
@@ -58,15 +77,12 @@ function Sidebar({passToParent}) {
     console.log(error);
   };
 
-  useEffect(() => {
-    fetchUserLocation();
-  }, []);
   useEffect(() =>{
-    if (city) {
-      // Fetch weather data
-      handleSubmit();
-    }
-  },[]);  // This will check on first render if the city is not null so get its weather
+    
+      // Fetch location and weather data
+      fetchUserLocation();
+    
+  },[]);  // Try to get the coordinates on the first render
 
   return (
     <div className="flex flex-col md:h-full">
@@ -97,15 +113,18 @@ function Sidebar({passToParent}) {
           </button>
         </div>
 
+        {notFound ? <h1 className="text-center text-white-400 mt-4 font-medium text-2xl">City not found</h1> : ''}
         {
           /* Show weather */
           typeof weather.main !== "undefined"  ? (
             <div>
-              <h2 className="text-7xl md:text-6xl pt-14 md:font-thin font-medium">
+              <h2 className="font-sans text-7xl md:text-6xl pt-14 md:font-thin font-medium">
                 {Math.floor(weather.main.temp) + " °"}
               </h2>
-              <h2 className="text-right md:text-xs text-sm font-semibold">
-                Wind: {weather.wind.speed + " mph"}
+              <h2 className="text-right md:text-xs text-sm font-normal">
+                <span className="font-medium">
+                Wind:
+                </span> {weather.wind.speed + " mph"}
               </h2>
               <h2 className="flex text-center items-center font-semibold text-lg">
                 <WiCloudy className=" mr-1" />
@@ -121,10 +140,10 @@ function Sidebar({passToParent}) {
       {typeof weather.main !== "undefined" &&
       typeof air_pollution.list !== "undefined" ? (
         <div className="md:mt-auto mt-8">
-          <h2 className="font-bold md:font-semibold md:py-2 text-lg tracking-wider">
+          <h2 className="font-serif font-bold md:font-semibold md:py-2 text-lg tracking-wider">
             {weather.name}, {weather.sys.country}
           </h2>
-          <p>{airQualityStages[air_pollution.list[0].main.aqi]}</p>
+          <p className="font-sans">{airQualityStages[air_pollution.list[0].main.aqi]}</p>
         </div>
       ) : (
         ""

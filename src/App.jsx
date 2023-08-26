@@ -11,13 +11,6 @@ function App() {
     console.log(weather);
   };
 
-  useEffect(() =>{
-    if (weather) {
-      // Fetch weather data
-      console.log(weather);
-    }
-  },[weather])
-
   const weatherDescriptions = {
     Clear: "The sky is clear and blue.",
     Sunny: "The sky is clear and the sun is shining.",
@@ -37,7 +30,13 @@ function App() {
     Tornado: "A tornado is wreaking havoc.",
   };
 
-  const cities = ["Karachi", "Lahore", "Faisalabad", "Gujranwala", "Rawalpindi"];
+  const cities = [
+    "Karachi",
+    "Lahore",
+    "Faisalabad",
+    "Gujranwala",
+    "Rawalpindi",
+  ];
 
   return (
     <main className="blur-image ">
@@ -45,7 +44,7 @@ function App() {
         className="grid lg:grid-cols-12 lg:gap-2
       md:grid-cols-8 md:gap-2
       sm:grid-cols-4 sm:gap-2
-      min-h-full
+      md:min-h-full
       content
       backdrop-blur-sm"
       >
@@ -54,47 +53,42 @@ function App() {
         </div>
 
         <div className="lg:col-span-9 md:col-span-5 sm:col-span-4  md:pl-8 lg:pl-10 p-10 ">
-
           <div className="flex flex-col h-full">
-
-          
-          <div className="hidden md:block lg:block">
-            <h2 className="text-lg leading-none font-medium tracking-widest">
-              {" "}
-              National
-            </h2>
-            <h2 className="text-lg leading-none font-medium tracking-widest">
-              {" "}
-              Weather
-            </h2>
-          </div>
-
-          <div className="md:pt-20">
-            <h3 className="hidden md:block md:text-base md:font-normal">
-              {" "}
-              Weather Forecast
-            </h3>
-          </div>
-          {typeof weather.weather !== "undefined" ? (
-            <div>
-              <h1 className="text-lg pt-7 font-semibold">
-                {weather.weather[0].main}
-              </h1>
-              <h1 className="text-4xl tracking-wide font-semibold">
-                {weatherDescriptions[weather.weather[0].main]}
-              </h1>
+            <div className="hidden md:block lg:block">
+              <h2 className="text-lg leading-none font-medium tracking-widest font-serif">
+                {" "}
+                National
+              </h2>
+              <h2 className="text-lg leading-none font-medium tracking-widest font-serif">
+                {" "}
+                Weather
+              </h2>
             </div>
-          ) : (
-            ""
-          )}
 
-          <div className="flex flex-row justify-between w-full mt-auto flex-wrap">
-            
+            <div className="md:pt-20">
+              <h3 className="hidden md:block md:text-base md:font-normal">
+                {" "}
+                Weather Forecast
+              </h3>
+            </div>
+            {typeof weather.weather !== "undefined" ? (
+              <div>
+                <h1 className="text-lg pt-7 font-semibold">
+                  {weather.weather[0].main}
+                </h1>
+                <h1 className="text-4xl tracking-wide font-semibold">
+                  {weatherDescriptions[weather.weather[0].main]}
+                </h1>
+              </div>
+            ) : (
+              ""
+            )}
+
+            <div className="flex flex-row justify-between w-full mt-auto flex-wrap">
               {cities.map((city) => (
                 <City city={city} />
               ))}
-        
-          </div>
+            </div>
           </div>
         </div>
       </div>
