@@ -39,21 +39,23 @@ function App() {
   ];
 
   return (
-    <main className="blur-image ">
+    <main className="blur-image     overflow-scroll">
       <div
         className="grid lg:grid-cols-12 lg:gap-2
       md:grid-cols-8 md:gap-2
       sm:grid-cols-4 sm:gap-2
       md:min-h-full
       content
-      backdrop-blur-sm"
+      backdrop-blur-sm
+  "
+      
       >
         <div className="md:col-span-3 lg:col-span-3 sm:col-span-4 p-10 border-solid md:border-r-2 lg:border-r-2 md:shadow-lg md:shadow-white-200/70 rounded-3xl">
           <Sidebar passToParent={handleDataFromChild} />
         </div>
 
         <div className="lg:col-span-9 md:col-span-5 sm:col-span-4  md:pl-8 lg:pl-10 p-10 ">
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col md:h-full">
             <div className="hidden md:block lg:block">
               <h2 className="text-lg leading-none font-medium tracking-widest font-serif">
                 {" "}
@@ -84,7 +86,7 @@ function App() {
               ""
             )}
 
-            <div className="flex flex-row justify-between w-full mt-auto flex-wrap">
+            <div className="flex flex-row justify-between w-full md:mt-auto mt-7  flex-wrap">
               {cities.map((city) => (
                 <City city={city} />
               ))}
