@@ -19,7 +19,7 @@ function fetchData(city) {
 function coordinates(city) {
   return new Promise(async function (resolve, reject) {
     const res = await fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${
         import.meta.env.VITE_API_KEY
       }`
     );
@@ -36,7 +36,7 @@ async function airQuality(city) {
 
   return new Promise(async function (resolve, reject) {
     const res = await fetch(
-      `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${
+      `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${
         import.meta.env.VITE_API_KEY
       }`
     );

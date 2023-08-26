@@ -56,8 +56,10 @@ function Sidebar({passToParent}) {
           console.log(position.coords)
           try {
             console.log("INside try");
-            const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_API_KEY}&units=metric`);
-            console.log(response.data);
+            const response = await axios.get(
+              `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_API_KEY}&units=metric`
+            );
+            
             setWeather(response.data);
             setAirPollution(await airQuality(response.data.name));
             forecast(response.data);
