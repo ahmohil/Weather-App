@@ -1,12 +1,7 @@
 import { CiSearch } from "react-icons/ci";
 import { WiThermometer, WiCloudy } from "react-icons/wi";
-import { useState } from "react";
 import { IoOpenOutline } from "react-icons/io5";
-
-const api = {
-  base: "https://api.openweathermap.org/data/2.5/",
-};
-
+import { useEffect, useState } from "react";
 const airQualityStages = {
   1: "Air quality is considered good. Little to no risk to health. Suitable for outdoor activities.",
   2: "Air quality is acceptable. Moderate health concern for sensitive individuals. Unlikely to affect the general public.",
@@ -15,53 +10,51 @@ const airQualityStages = {
   5: "Serious health effects for everyone. Outdoor activities should be avoided. Sensitive groups should stay indoors.",
 };
 
-function Sidebar({ fetchData}) {
+const api = {
+  base: 'https://api.openweathermap.org/data/2.5/',
+};
+
+
+function Sidebar({ fetchData }) {
   const [city, setCity] = useState("");
+  const [cityFromInput,setCityFromInput] = useState(""); 
   const [weather, setWeather] = useState("");
-  const [air_pollution, setAir_pollution] = useState("");
-  const  onDataReceived  = fetchData;
+  const [air_pollution, setAirPollution] = useState("");
 
-  const handleSubmit = () => {
-    console.log(city);
-    fetch(`${api.base}weather?q=${city}&units=metric&APPID=${import.meta.env.VITE_API_KEY}`)
-      .then((res) => res.json())
-      .then((result) => {
-        setWeather(result);
-        console.log(result);
-      })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-      });
+  useEffect(() => {
+    if (city) {
+      // Fetch weather data
+      fetch(`${api.base}weather?q=${city}&units=metric&APPID=${import.meta.env.VITE_API_KEY}`)
+        .then((res) => res.json())
+        .then((result) => {
+          setWeather(result);
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);
+        });
 
-    /*  
-    }
-    );
-    
-    */
+      // Fetch geo data and air pollution data
+      fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${import.meta.env.VITE_API_KEY}`)
+        .then((res) => res.json())
+        .then((result) => {
+          const lat = result[0].lat;
+          const lon = result[0].lon;
 
-    fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${import.meta.env.VITE_API_KEY}`
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        console.log(result);
-        var lat = result[0].lat;
-        var lon = result[0].lon;
-
-        fetch(
-          `http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_API_KEY}`
-        )
-          .then((res) => res.json())
-          .then((result) => {
-            console.log(result);
-            setAir_pollution(result);
-            console.log(air_pollution.list[0].main.aqi).catch((error) => {
+          fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_API_KEY}`)
+            .then((res) => res.json())
+            .then((result) => {
+              setAirPollution(result);
+            })
+            .catch((error) => {
               console.error("Fetch error:", error);
             });
-          });
+        });
+    }
+  }, [city]);
 
-        onDataReceived(weather);
-      });
+  const handleSubmit = () => {
+    // Set the city state to trigger the useEffect
+    setCity(cityFromInput);
   };
 
   return (
@@ -77,7 +70,7 @@ function Sidebar({ fetchData}) {
             type="search"
             placeholder="Enter City or Town"
             onChange={(e) => {
-              setCity(e.target.value);
+              setCityFromInput(e.target.value);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
