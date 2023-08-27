@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Sidebar from "../src/Components/Sidebar.jsx";
 import City from "./Components/City";
+import Clock from "./Components/Clock";
+
 function App() {
   const [weather, setWeather] = useState("");
 
@@ -12,7 +14,7 @@ function App() {
   };
 
   const weatherDescriptions = {
-    Clear: "The sky is clear and blue.",
+    Clear: "The sky is clear.",
     Sunny: "The sky is clear and the sun is shining.",
     Clouds: "The sky is partially covered by clouds.",
     Rain: "Raindrops are falling from the sky.",
@@ -48,7 +50,6 @@ function App() {
       content
       backdrop-blur-sm
   "
-      
       >
         <div className="md:col-span-3 lg:col-span-3 sm:col-span-4 p-10 border-solid md:border-r-2 lg:border-r-2 md:shadow-lg md:shadow-white-200/70 rounded-3xl">
           <Sidebar passToParent={handleDataFromChild} />
@@ -81,6 +82,9 @@ function App() {
                 <h1 className="text-4xl tracking-wide font-semibold">
                   {weatherDescriptions[weather.weather[0].main]}
                 </h1>
+                <div className="font-mono font-medium text-base flex mt-2">
+                  {weather.sys.country}, <Clock cityName={weather.name} />
+                </div>
               </div>
             ) : (
               ""
