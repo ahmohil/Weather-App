@@ -1,4 +1,3 @@
-import { CiSearch } from "react-icons/ci";
 import { WiThermometer, WiCloudy } from "react-icons/wi";
 import { useEffect, useState } from "react";
 import {airQuality, fetchData} from '../api.jsx';
