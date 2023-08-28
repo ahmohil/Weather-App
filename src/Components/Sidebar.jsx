@@ -3,17 +3,8 @@ import { WiThermometer, WiCloudy } from "react-icons/wi";
 import { useEffect, useState } from "react";
 import {airQuality, fetchData} from '../api.jsx';
 import axios from "axios";
-import cities from "cities.json";
-
-
-const airQualityStages = {
-  1: "Air quality is considered good. Little to no risk to health. Suitable for outdoor activities.",
-  2: "Air quality is acceptable. Moderate health concern for sensitive individuals. Unlikely to affect the general public.",
-  3: "People with respiratory or heart conditions may be affected. Sensitive groups should limit outdoor exertion.",
-  4: "Health effects possible for everyone. Sensitive groups may experience serious effects. Avoid outdoor activities.",
-  5: "Serious health effects for everyone. Outdoor activities should be avoided. Sensitive groups should stay indoors.",
-};
-
+import Search from "./Search.jsx";
+import { airQualityStages } from "./descriptions.jsx";
 
 function Sidebar({passToParent}) {
   const [city, setCity] = useState("");
@@ -61,7 +52,6 @@ function Sidebar({passToParent}) {
             const response = await axios.get(
               `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_API_KEY}&units=metric`
             );
-            
             setWeather(response.data);
             setAirPollution(await airQuality(response.data.name));
             forecast(response.data);
@@ -78,43 +68,38 @@ function Sidebar({passToParent}) {
       setError('Geolocation is not supported by your browser.');
     }
 
+    
     console.log(error);
   };
+  
+  useEffect(() => {
+    console.log(city)
+    handleSubmit();
+  },[city]);
 
   useEffect(() =>{
-    console.log(cities);
       // Fetch location and weather data
       fetchUserLocation();
     
   },[]);  // Try to get the coordinates on the first render
+
+
+  const onCityChange = (data) =>{
+    setCity(data.value)
+  }
 
   return (
     <div className="flex flex-col md:h-full">
       {/* Top Div*/}
       <div>
         <div className="relative flex md:justify-center lg:block">
-          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white-400">
+          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white-400 text-xl">
             <WiThermometer />
           </span>
-          <input
-            className="w-full border-t-0 border-l-0 border-r-0 border-b-2 border-white bg-transparent focus:border-blue-400 p-1 pl-8 pr-12 focus:outline-none  placeholder-white"
-            type="search"
-            placeholder="Enter City or Town"
-            onChange={(e) => {
-              setCity(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSubmit();
-              }
-            }}
-          />
-          <button
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 md:text-center  focus:outline-none"
-            onClick={handleSubmit}
-          >
-            <CiSearch className="text-xl text-white-400" />
-          </button>
+          <span className="w-full">
+          <Search onSearchChange={onCityChange}/>
+
+          </span>
         </div>
 
         {notFound ? <h1 className="text-center text-white-400 mt-4 font-medium text-2xl">City not found</h1> : ''}

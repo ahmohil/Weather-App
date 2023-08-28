@@ -10,6 +10,7 @@ const Clock = ({ cityName }) => {
     // Fetch the timezone for the given city
     const fetchTimezoneOffset = async () => {
       try {
+        setTimezone("");
         setLoading(true);
         const response = await fetch(
           `https://api.ipgeolocation.io/timezone?apiKey=${

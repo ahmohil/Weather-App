@@ -1,3 +1,4 @@
+export const geo_API_url =  'https://wft-geo-db.p.rapidapi.com/v1/geo';
 const api = {
   base: "https://api.openweathermap.org/data/2.5/",
 };
@@ -44,5 +45,14 @@ async function airQuality(city) {
     resolve(res.json());
   });
 }
+
+export const geoAPIOptions = {
+	method: 'GET',
+	headers: {
+		'X-RapidAPI-Key': '53baec7486mshc0fc6ba9395f7f9p1c6573jsn47f70261e3c4',
+		'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
+	}
+};
+
 
 export { fetchData, airQuality };

@@ -3,6 +3,7 @@ import "./App.css";
 import Sidebar from "../src/Components/Sidebar.jsx";
 import City from "./Components/City";
 import Clock from "./Components/Clock";
+import { weatherDescriptions, cities } from "./Components/descriptions";
 
 function App() {
   const [weather, setWeather] = useState("");
@@ -13,32 +14,6 @@ function App() {
     console.log(weather);
   };
 
-  const weatherDescriptions = {
-    Clear: "The sky is clear.",
-    Sunny: "The sky is clear and the sun is shining.",
-    Clouds: "The sky is partially covered by clouds.",
-    Rain: "Raindrops are falling from the sky.",
-    Drizzle: "Light rain is falling gently.",
-    Thunderstorm: "There's a powerful thunderstorm in progress.",
-    Snow: "Snowflakes are gently falling from the sky.",
-    Mist: "A light mist is covering the landscape.",
-    Smoke: "The air contains smoke particles.",
-    Haze: "There's a slight haze in the air.",
-    Dust: "Dust particles are floating in the air.",
-    Fog: "Thick fog is reducing visibility.",
-    Sand: "A sandstorm is sweeping through the area.",
-    Ash: "Volcanic ash is filling the atmosphere.",
-    Squall: "A strong wind squall is blowing.",
-    Tornado: "A tornado is wreaking havoc.",
-  };
-
-  const cities = [
-    "Karachi",
-    "Lahore",
-    "Faisalabad",
-    "Gujranwala",
-    "Rawalpindi",
-  ];
 
   return (
     <main className="blur-image     overflow-scroll">

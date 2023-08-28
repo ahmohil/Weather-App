@@ -38,3 +38,10 @@
 .content {
   z-index: 1; /* Place content above overlay and blurred image */
 }
+
+
+.css-1usgjb4-control:focus {
+  border-color: transparent;
+  border: none;
+  background-color: #242424;
+}
