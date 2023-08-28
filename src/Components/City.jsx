@@ -13,7 +13,7 @@ function City({ city }) {
   }, []);
 
   return (
-    <section className="text-left rounded-b-sm mb-2 md:mt-0 mt-7 mx-2">
+    <section className="text-left rounded-b-sm mb-2 md:mt-2 mt-7 mx-2">
       <h2>
         {typeof weather.main !== "undefined" ? (
           <div className="font-ight md:text-sm text-xs">

@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { DateTime } from 'luxon';
+import React, { useState, useEffect } from "react";
+import { DateTime } from "luxon";
 
 const Clock = ({ cityName }) => {
   const [currentTime, setCurrentTime] = useState(DateTime.local());
-  const [timezoneOffset, setTimezoneOffset] = useState(0);
-  const [timeZone, setTimezone] = useState('');
+  const [timeZone, setTimezone] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch the timezone offset for the given city
+    // Fetch the timezone for the given city
     const fetchTimezoneOffset = async () => {
       try {
-        const response = await fetch(`https://api.ipgeolocation.io/timezone?apiKey=c98cdbd8e0bf4afb87b8d0a30fa2bad7&location=${cityName}`);
+        setLoading(true);
+        const response = await fetch(
+          `https://api.ipgeolocation.io/timezone?apiKey=${
+            import.meta.env.VITE_CLOCK_API_KEY
+          }&location=${cityName}`
+        );
         const data = await response.json();
-        console.log(data);
-        setTimezoneOffset(data.timezone_offset);
         setTimezone(data.timezone);
       } catch (error) {
-        console.error('Error fetching timezone offset', error);
+        console.error("Error fetching timezone offset", error);
       }
     };
 
@@ -24,20 +27,29 @@ const Clock = ({ cityName }) => {
   }, [cityName]);
 
   useEffect(() => {
-    // Update the current time based on the timezone offset
+    // Update the current time based on the timezone
     const interval = setInterval(() => {
-      setCurrentTime(DateTime.local({ zone: timeZone }));
+      if (timeZone != "") {
+        setCurrentTime(DateTime.local({ zone: timeZone }));
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
     }, 1000);
 
     // Clean up the interval on component unmount
     return () => {
       clearInterval(interval);
     };
-  }, [timezoneOffset]);
+  }, [timeZone]);
 
   return (
     <div>
-      <p>{currentTime.toFormat('hh:mm:ss a')}</p>
+      <p>
+        {loading == true
+          ? "Loading Time..."
+          : currentTime.toFormat("hh:mm:ss a")}
+      </p>
     </div>
   );
 };

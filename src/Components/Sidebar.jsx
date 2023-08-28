@@ -3,6 +3,8 @@ import { WiThermometer, WiCloudy } from "react-icons/wi";
 import { useEffect, useState } from "react";
 import {airQuality, fetchData} from '../api.jsx';
 import axios from "axios";
+import cities from "cities.json";
+
 
 const airQualityStages = {
   1: "Air quality is considered good. Little to no risk to health. Suitable for outdoor activities.",
@@ -80,7 +82,7 @@ function Sidebar({passToParent}) {
   };
 
   useEffect(() =>{
-    
+    console.log(cities);
       // Fetch location and weather data
       fetchUserLocation();
     
